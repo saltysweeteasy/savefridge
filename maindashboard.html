@@ -80,7 +80,7 @@
             box-shadow: 0 4px 8px rgba(0,0,0,0.15);
         }
 
-        /* Loading Video Container */
+        /* Loading Video Container - Full width, blends with background */
         .loading-video-container {
             width: 100%;
             min-height: 400px;
@@ -100,6 +100,7 @@
             mix-blend-mode: multiply;
         }
         
+        /* Initial video container - desktop default (original transform) */
         .initial-video-container {
             width: 100%;
             min-height: 400px;
@@ -126,6 +127,7 @@
             transition: all 0.2s ease;
         }
         
+        /* Mobile specific: make linguinithinking.mp4 bigger, add resize control */
         @media (max-width: 768px) {
             .initial-video-container {
                 min-height: auto;
@@ -187,10 +189,12 @@
             }
         }
         
+        /* Desktop: hide the size control by default, but we can show it optionally */
         .video-size-control {
             display: none;
         }
         
+        /* Content wrapper for dynamic swapping */
         .dynamic-content-wrapper {
             position: relative;
             min-height: 450px;
@@ -200,6 +204,7 @@
             transition: opacity 0.4s ease-in-out;
         }
         
+        /* New style for centered meal overview columns (no image column) */
         .meal-overview-centered {
             display: flex;
             flex-direction: column;
@@ -231,30 +236,11 @@
             text-align: center;
             margin-bottom: 1.5rem;
         }
-        
-        .cached-badge {
-            background: #10b981;
-            color: white;
-            font-size: 0.7rem;
-            padding: 2px 8px;
-            border-radius: 20px;
-            margin-left: 10px;
-            vertical-align: middle;
-            display: inline-block;
-            animation: fadeInOut 3s ease-in-out;
-        }
-        
-        @keyframes fadeInOut {
-            0% { opacity: 0; transform: translateY(-10px); }
-            20% { opacity: 1; transform: translateY(0); }
-            80% { opacity: 1; transform: translateY(0); }
-            100% { opacity: 0; transform: translateY(-10px); }
-        }
     </style>
 </head>
 <body class="font-sans antialiased text-gray-900 overflow-x-hidden">
 
-    <!-- Left Sidebar -->
+    <!-- Left Sidebar (same as before) -->
     <div id="sidebar" class="fixed inset-y-0 left-0 w-72 bg-white shadow-2xl transform -translate-x-full transition-transform duration-300 ease-in-out z-[60]">
         <div class="p-8">
             <div class="flex items-center justify-between mb-10">
@@ -300,7 +286,7 @@
         </div>
     </div>
 
-    <!-- Right Sidebar (User Profile) -->
+    <!-- Right Sidebar (User Profile) with Account Details -->
     <div id="userSidebar" class="fixed inset-y-0 right-0 w-80 bg-white shadow-2xl transform translate-x-full transition-transform duration-300 ease-in-out z-[60] border-l border-gray-100">
         <div class="p-8 flex flex-col h-full">
             <div class="flex items-center justify-between mb-8">
@@ -387,14 +373,16 @@
                     </div>
                 </div>
                 
-                <!-- Right Column: Results Area -->
+                <!-- Right Column: Results Area with Dynamic Content Swapping -->
                 <div id="resultsArea" class="space-y-6">
                     <h2 class="text-3xl font-bold tracking-tight text-gray-800 uppercase">Possible Meals</h2>
                     
                     <div id="dynamicContentWrapper" class="dynamic-content-wrapper">
+                        <!-- INITIAL VIDEO CONTAINER -->
                         <div id="initialVideoContainer" class="initial-video-container">
                             <video id="initialVideo" autoplay loop muted playsinline>
                                 <source src="linguinithinking.mp4" type="video/mp4">
+                                Your browser does not support the video tag.
                             </video>
                             <div id="videoSizeControl" class="video-size-control">
                                 <label>📐 Size</label>
@@ -403,14 +391,17 @@
                             </div>
                         </div>
                         
+                        <!-- Loading Screen (Video) -->
                         <div id="loadingScreen" class="loading-screen hidden">
                             <div class="loading-video-container">
                                 <video id="loadingVideo" loop muted playsinline>
                                     <source src="mixtest2.mp4" type="video/mp4">
+                                    Your browser does not support the video tag.
                                 </video>
                             </div>
                         </div>
                         
+                        <!-- Results Screen (Meals) -->
                         <div id="resultsScreen" class="results-screen hidden">
                             <div id="mealsContainer" class="space-y-4"></div>
                         </div>
@@ -420,7 +411,7 @@
         </main>
     </div>
 
-    <!-- Meal Overview -->
+    <!-- Meal Overview (Image removed, centered layout) -->
     <div id="mealOverview" class="hidden flex flex-col min-h-screen">
         <header class="bg-[#dcfce7] border-b border-green-200 shadow-sm sticky top-0 z-50">
             <nav class="max-w-[1440px] mx-auto px-6 py-3 flex items-center justify-between">
@@ -434,6 +425,7 @@
 
         <main class="flex-grow max-w-[1100px] mx-auto py-12 px-6 w-full">
             <div class="meal-overview-centered">
+                <!-- Title and favorite button centered -->
                 <div class="meal-title-centered flex items-center justify-center space-x-4 mb-8 flex-wrap">
                     <h2 id="overviewMealName" class="text-4xl font-bold uppercase tracking-tight text-gray-800">Meal Name</h2>
                     <button id="favBtnOverview" onclick="toggleFavorite()" class="flex items-center hover:scale-105 transition-transform">
@@ -443,11 +435,13 @@
                 </div>
 
                 <div class="meal-overview-grid">
+                    <!-- Description Column (moved to left or right, both centered) -->
                     <div class="meal-description-card">
                         <h3 class="text-lg font-bold uppercase tracking-wider text-green-700 mb-3">🍽️ Chef's Note</h3>
                         <p id="mealDesc" class="text-gray-700 font-medium leading-relaxed italic min-h-[120px]"></p>
                     </div>
 
+                    <!-- Accordion Column (Nutrition, Steps, Add-ons) -->
                     <div class="space-y-4">
                         <div id="accordionGroup" class="space-y-4">
                             <div class="category-box">
@@ -493,7 +487,7 @@
     </div>
 
     <script>
-        // FIREBASE CONFIG
+        // --- FIREBASE CONFIG ---
         const firebaseConfig = {
             apiKey: "AIzaSyAZl_HJXjKdycYfYfb4rH7Pue6vwJ9G-KM",
             authDomain: "fridgewise-37166.firebaseapp.com",
@@ -544,11 +538,89 @@
             }
         }
 
+        // Helper function to call Gemini API (keyless - using firebaseConfig.apiKey)
+        async function callAI(text) {
+            try {
+                const res = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash-exp:generateContent?key=${firebaseConfig.apiKey}`, {
+                    method: 'POST',
+                    headers: {'Content-Type': 'application/json'},
+                    body: JSON.stringify({ 
+                        contents: [{ 
+                            parts: [{ text: text }] 
+                        }] 
+                    })
+                });
+                const data = await res.json();
+                if (data.candidates && data.candidates[0] && data.candidates[0].content && data.candidates[0].content.parts) {
+                    return data.candidates[0].content.parts[0].text;
+                }
+                return "Error: Unable to fetch response.";
+            } catch (error) {
+                console.error("AI Error:", error);
+                return "Error loading content.";
+            }
+        }
+
+        // NEW FUNCTION: Get or generate meal content from cache/database (same as checkpoint version)
+        async function getMealContent(mealName, sectionType) {
+            if (!currentUser) return null;
+            
+            const mealId = mealName.replace(/[.#$/[\]]/g, "_");
+            const contentRef = database.ref(`users/${currentUser.uid}/meal_cache/${mealId}/${sectionType}`);
+            
+            // Try to get from cache first
+            const snapshot = await contentRef.once('value');
+            if (snapshot.exists()) {
+                console.log(`Loaded ${sectionType} for ${mealName} from cache`);
+                return snapshot.val();
+            }
+            
+            // If not in cache, generate via AI
+            console.log(`Generating ${sectionType} for ${mealName} via API...`);
+            let aiPrompt = "";
+            switch(sectionType) {
+                case 'description':
+                    aiPrompt = `Give a short, appetizing 2-sentence Filipino description for ${mealName}.`;
+                    break;
+                case 'Ingredients':
+                    aiPrompt = `Provide Ingredients for "${mealName}". Keep it concise and use bullets.`;
+                    break;
+                case 'Nutritional Facts':
+                    aiPrompt = `Provide Nutritional Facts for "${mealName}". Keep it concise and use bullets.`;
+                    break;
+                case 'Step by Step Process':
+                    aiPrompt = `Provide Step by Step Process for "${mealName}". Keep it concise and use bullets.`;
+                    break;
+                case 'Nutritional Analysis':
+                    aiPrompt = `Provide Nutritional Analysis for "${mealName}". Keep it concise and use bullets.`;
+                    break;
+                case 'Add-ons Suggestion':
+                    aiPrompt = `Provide Add-ons Suggestion for "${mealName}". Keep it concise and use bullets.`;
+                    break;
+                default:
+                    return null;
+            }
+            
+            const aiResponse = await callAI(aiPrompt);
+            
+            // Save to cache
+            if (aiResponse && !aiResponse.startsWith("Error")) {
+                await contentRef.set(aiResponse);
+                console.log(`Saved ${sectionType} for ${mealName} to cache`);
+            }
+            
+            return aiResponse;
+        }
+
         auth.onAuthStateChanged((user) => {
+            const urlParams = new URLSearchParams(window.location.search);
+            const mealToOpen = urlParams.get('open');
+
             if (!user) {
                 window.location.href = "index.html";
                 return;
             }
+
             currentUser = user;
             database.ref('users/' + user.uid).once('value').then((snapshot) => {
                 const data = snapshot.val();
@@ -556,11 +628,14 @@
                 updateProfileUI(name, user.email);
             });
             document.getElementById('leftSidebarContainer').classList.remove('hidden');
+            document.getElementById('brandLogo').classList.add('hidden');
             document.getElementById('logoutBtn').classList.remove('hidden');
-            
-            const urlParams = new URLSearchParams(window.location.search);
-            const mealToOpen = urlParams.get('open');
-            if (mealToOpen) openMealOverview(decodeURIComponent(mealToOpen));
+
+            if (mealToOpen) {
+                setTimeout(() => {
+                    openMealOverview(decodeURIComponent(mealToOpen));
+                }, 100);
+            }
         });
 
         function updateProfileUI(name, email) {
@@ -597,122 +672,24 @@
                 </li>`).join('');
         }
 
-        // ========== PER-USER CACHING SYSTEM (from checkpoint version) ==========
-        // This saves content per user, per meal, per section for better personalization
-        
-        async function getMealContent(mealName, sectionType) {
-            if (!currentUser) return null;
-            
-            const mealId = mealName.toLowerCase().replace(/[.#$/[\]]/g, "_");
-            const contentRef = database.ref(`users/${currentUser.uid}/meal_cache/${mealId}/${sectionType}`);
-            
-            // Try to get from cache first
-            const snapshot = await contentRef.once('value');
-            if (snapshot.exists()) {
-                console.log(`📦 CACHE HIT: ${sectionType} for "${mealName}"`);
-                return snapshot.val();
-            }
-            
-            // If not in cache, generate via secure backend API with enhanced prompts
-            console.log(`🤖 Generating ${sectionType} for "${mealName}" via API...`);
-            let aiPrompt = "";
-            
-            // Enhanced prompts (from checkpoint version which had better responses)
-            switch(sectionType) {
-                case 'description':
-                    aiPrompt = `Write a short, appetizing 2-sentence Filipino-style description for the dish "${mealName}". Make it sound warm, inviting, and authentic like a Filipino chef describing their specialty. Focus on the flavors, aromas, and the experience of eating it.`;
-                    break;
-                case 'Ingredients':
-                    aiPrompt = `List all the ingredients needed to cook "${mealName}". Format as a bullet point list with each ingredient on a new line starting with a dash. Include specific measurements where appropriate. Keep it authentic to Filipino cuisine.`;
-                    break;
-                case 'Nutritional Facts':
-                    aiPrompt = `Provide the nutritional facts for a serving of "${mealName}". Format as a bullet point list with each fact on a new line starting with a dash. Include calories, protein, carbohydrates, fats, and any other relevant nutrients. Use approximate values that are realistic for this dish.`;
-                    break;
-                case 'Step by Step Process':
-                    aiPrompt = `Provide the step-by-step cooking instructions for "${mealName}". Format as numbered steps with each step on a new line starting with the number. Include specific techniques, timing, and tips that would help someone cook this dish successfully. Make it detailed but easy to follow.`;
-                    break;
-                case 'Nutritional Analysis':
-                    aiPrompt = `Provide a brief nutritional analysis for "${mealName}" focusing on Filipino dietary considerations. Format as bullet points with each point on a new line starting with a dash. Discuss the health benefits, potential concerns, and how it fits into a balanced Filipino diet. Be informative and practical.`;
-                    break;
-                case 'Add-ons Suggestion':
-                    aiPrompt = `Suggest 3-4 side dishes or add-ons that pair well with "${mealName}" for a complete Filipino meal. Format as bullet points with each suggestion on a new line starting with a dash. Include why each pairing works well together.`;
-                    break;
-                default:
-                    return null;
-            }
-            
-            try {
-                const aiResponse = await callAISecure(aiPrompt);
-                if (aiResponse) {
-                    // Save to user's cache
-                    await contentRef.set({
-                        content: aiResponse,
-                        generatedAt: Date.now(),
-                        mealName: mealName,
-                        sectionType: sectionType
-                    });
-                    console.log(`💾 Saved ${sectionType} for "${mealName}" to user cache`);
-                    return aiResponse;
-                }
-                return "Content generation failed. Please try again.";
-            } catch (error) {
-                console.error(`Failed to generate ${sectionType}:`, error);
-                return "Unable to load content at this time.";
-            }
-        }
-        
-        // Secure backend API call (no exposed API keys)
-        async function callAISecure(prompt) {
-            try {
-                const response = await fetch('/api/generate', {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ prompt: prompt })
-                });
-                const data = await response.json();
-                if (data.response) {
-                    return data.response;
-                }
-                throw new Error('No response from API');
-            } catch (error) {
-                console.error('AI call failed:', error);
-                return null;
-            }
-        }
-
         async function openMealOverview(name) {
             if (!currentUser) { alert("Please log in first!"); return; }
             currentMealName = name;
-            
-            // Save to cooking history
             const historyRef = database.ref(`users/${currentUser.uid}/history`).push();
-            historyRef.set({ 
-                name: name, 
-                ingredients: ingredients.length > 0 ? ingredients.join(", ") : "None specified", 
-                cookedAt: Date.now() 
-            });
-            
-            // Switch views
+            historyRef.set({ name: name, ingredients: ingredients.length > 0 ? ingredients.join(", ") : "None specified", cookedAt: Date.now() });
             document.getElementById('mainDashboard').classList.add('hidden');
             document.getElementById('mealOverview').classList.remove('hidden');
             document.getElementById('overviewMealName').innerText = name;
-            
-            // Check favorite status
             const mealId = name.replace(/[.#$/[\]]/g, "_");
             database.ref(`users/${currentUser.uid}/favorites/${mealId}`).once('value', s => setStarState(s.exists()));
-            
-            // Reset accordion state
-            document.querySelectorAll('.accordion-content').forEach(el => { 
-                el.classList.remove('open');
-                el.innerHTML = "";
-            });
+            document.querySelectorAll('.accordion-content').forEach(el => { el.classList.remove('open'); el.innerHTML = ""; });
             document.querySelectorAll('#accordionGroup span').forEach(s => s.innerText = "+");
-            
-            // Load description (Chef's Note)
             const descEl = document.getElementById('mealDesc');
-            descEl.innerHTML = "";
+            descEl.innerText = "";
+            
+            // Get description from cache or generate (same as checkpoint version)
             const description = await getMealContent(name, 'description');
-            if (description) {
+            if (description && !description.startsWith("Error")) {
                 typeWriter(description, descEl);
             } else {
                 descEl.innerText = "Unable to load description.";
@@ -725,9 +702,9 @@
             const favRef = database.ref(`users/${currentUser.uid}/favorites/${mealId}`);
             favRef.once('value', snapshot => {
                 if (snapshot.exists()) {
-                    favRef.remove().then(() => { setStarState(false); alert("Meal removed from favorites"); });
+                    favRef.remove().then(() => { setStarState(false); alert("The meal is unfavorited"); });
                 } else {
-                    favRef.set({ name: currentMealName, savedAt: Date.now() }).then(() => { setStarState(true); alert("Meal added to favorites"); });
+                    favRef.set({ name: currentMealName, savedAt: Date.now() }).then(() => { setStarState(true); alert("The meal is favorited"); });
                 }
             });
         }
@@ -736,36 +713,23 @@
             const content = btn.nextElementSibling;
             const span = btn.querySelector('span');
             if (content.classList.contains('open')) {
-                content.classList.remove('open'); 
-                span.innerText = "+";
+                content.classList.remove('open'); span.innerText = "+";
             } else {
-                content.innerHTML = "<div class='py-4 italic text-gray-400 text-center'><span class='animate-pulse'>📖 Colette is consulting her recipe book...</span></div>";
-                content.classList.add('open'); 
-                span.innerText = "-";
+                content.innerHTML = "<p class='py-4 italic text-gray-400 text-center'>Consulting the chef...</p>";
+                content.classList.add('open'); span.innerText = "-";
                 
-                // Get content from cache or generate
+                // Get content from cache or generate (same as checkpoint version)
                 const aiRes = await getMealContent(currentMealName, type);
                 
                 content.innerHTML = ""; 
-                if (aiRes) {
-                    const items = aiRes.split(/\r?\n/).filter(l => l.trim().length > 0);
-                    // Remove any existing bullet markers from the text
-                    const cleanItems = items.map(l => l.replace(/^[\d]+\.\s*|\*|\-\s+/, "").trim());
-                    
-                    // Use numbered list for steps, bullet list for others
-                    if (type === 'Step by Step Process') {
-                        const list = document.createElement('ol');
-                        list.className = "ai-bullet-list typing list-decimal ml-6";
-                        content.appendChild(list);
-                        typeWriterList(cleanItems, list);
-                    } else {
-                        const list = document.createElement('ul');
-                        list.className = "ai-bullet-list typing";
-                        content.appendChild(list);
-                        typeWriterList(cleanItems, list);
-                    }
+                if (aiRes && !aiRes.startsWith("Error")) {
+                    const list = document.createElement('ul');
+                    list.className = "ai-bullet-list typing";
+                    content.appendChild(list);
+                    const items = aiRes.split(/\n/).filter(l => l.trim().length > 0).map(l => l.replace(/^(\d+\.|\*|-)\s+/, ""));
+                    typeWriterList(items, list);
                 } else {
-                    content.innerHTML = "<p class='py-4 italic text-red-400 text-center'>❌ Failed to load content. Please try again.</p>";
+                    content.innerHTML = "<p class='py-4 italic text-red-400 text-center'>Failed to load content.</p>";
                 }
             }
         }
@@ -783,61 +747,27 @@
             }
         }
 
-        // Legacy callAI for meal suggestions (kept for backward compatibility)
-        async function callAI(text) {
-            try {
-                const response = await fetch('/api/generate', {
-                    method: 'POST', 
-                    headers: { 'Content-Type': 'application/json'},
-                    body: JSON.stringify({ prompt: text })
-                });
-                const data = await response.json();
-                return data.response;
-            } catch { 
-                return "Error loading content."; 
-            }
-        }
-
-        function typeWriter(text, element, speed = 20) {
-            let i = 0;
-            element.classList.add('typing');
-            element.innerHTML = '';
+        function typeWriter(text, element, speed = 15) {
+            let i = 0; element.classList.add('typing');
             (function type() {
-                if (i < text.length) {
-                    element.innerHTML += text.charAt(i);
-                    i++;
-                    setTimeout(type, speed);
-                } else {
-                    element.classList.remove('typing');
-                }
+                if (i < text.length) { element.innerHTML += text.charAt(i); i++; setTimeout(type, speed); }
+                else { element.classList.remove('typing'); }
             })();
         }
 
-        function typeWriterList(items, container, speed = 15) {
+        function typeWriterList(items, container, speed = 10) {
             let itemIdx = 0;
-            container.classList.add('typing');
-            
             (function nextItem() {
                 if (itemIdx < items.length) {
                     const li = document.createElement('li');
-                    li.classList.add('typing');
                     container.appendChild(li);
                     let charIdx = 0;
-                    const text = items[itemIdx];
                     (function typeChar() {
-                        if (charIdx < text.length) {
-                            li.innerHTML = text.substring(0, charIdx + 1);
-                            charIdx++;
-                            setTimeout(typeChar, speed);
-                        } else {
-                            li.classList.remove('typing');
-                            itemIdx++;
-                            nextItem();
-                        }
+                        if (charIdx < items[itemIdx].length) {
+                            li.innerHTML += items[itemIdx].charAt(charIdx); charIdx++; setTimeout(typeChar, speed);
+                        } else { itemIdx++; nextItem(); }
                     })();
-                } else {
-                    container.classList.remove('typing');
-                }
+                } else { container.classList.remove('typing'); }
             })();
         }
 
@@ -847,13 +777,12 @@
         }
 
         function escapeHtml(text) {
-            if (!text) return '';
             const div = document.createElement('div');
             div.textContent = text;
             return div.innerHTML;
         }
 
-        // Sidebar functionality
+        // Sidebar
         const sidebar = document.getElementById('sidebar');
         const userSidebar = document.getElementById('userSidebar');
         const overlay = document.getElementById('sidebarOverlay');
@@ -875,17 +804,22 @@
             if (ingredients.length === 0) return alert("Add ingredients first!");
             const btn = document.getElementById('cookBtn');
             const mealsContainer = document.getElementById('mealsContainer');
-            btn.innerText = "👩‍🍳 CHEF IS BRAINSTORMING..."; 
-            btn.disabled = true;
+            btn.innerText = "CHEF IS BRAINSTORMING..."; btn.disabled = true;
             initialVideoContainer.classList.add('hidden');
             loadingScreenDiv.classList.remove('hidden');
             resultsScreenDiv.classList.add('hidden');
             loadingVideo.currentTime = 0;
             await loadingVideo.play().catch(e => console.log("Video autoplay prevented:", e));
             try {
-                const res = await callAI(`I have these ingredients: ${ingredients.join(", ")}. Suggest 5-8 authentic Filipino-style meals that can be made with these or similar ingredients. Return ONLY valid JSON in this exact format: [{"name": "Meal Name", "time": "XX mins"}]. No markdown, no extra text.`);
-                let cleanedRes = res.replace(/```json\n?/g, '').replace(/```\n?/g, '').trim();
-                const meals = JSON.parse(cleanedRes);
+                const res = await callAI(`I have: ${ingredients.join(", ")}. Suggest 3-8 Filipino-style meals. Return ONLY JSON array: [{"name": "Name", "time": "X mins"}]`);
+                // Clean up the response to extract JSON
+                let cleanRes = res.replace(/```json|```/g, "").trim();
+                // Find the JSON array in the response
+                const jsonMatch = cleanRes.match(/\[[\s\S]*\]/);
+                if (jsonMatch) {
+                    cleanRes = jsonMatch[0];
+                }
+                const meals = JSON.parse(cleanRes);
                 loadingVideo.pause();
                 loadingScreenDiv.classList.add('hidden');
                 resultsScreenDiv.classList.remove('hidden');
@@ -900,11 +834,8 @@
                 loadingScreenDiv.classList.add('hidden');
                 resultsScreenDiv.classList.remove('hidden');
                 mealsContainer.innerHTML = '<div class="bg-red-50 border border-red-200 rounded-xl p-8 text-center text-red-700 font-semibold">⚠️ AI service error. Please try again.</div>';
-                alert("AI Error. Please try again."); 
-            } finally { 
-                btn.innerText = "START COOKING"; 
-                btn.disabled = false; 
-            }
+                alert("AI Error. Try again."); 
+            } finally { btn.innerText = "START COOKING"; btn.disabled = false; }
         };
 
         window.onload = () => {
@@ -913,10 +844,6 @@
             resultsScreenDiv.classList.add('hidden');
             if (initialVideoElem) initialVideoElem.play().catch(e => console.log("Initial video autoplay prevented"));
             initVideoResize();
-            console.log('🚀 MainDashboard loaded with PER-USER CACHING SYSTEM!');
-            console.log('📦 Each user has their own cache stored at users/{userId}/meal_cache/');
-            console.log('✨ Using enhanced prompts for better AI responses (like checkpoint version)');
-            console.log('🔐 Secure backend API - no exposed API keys!');
         };
     </script>
 </body>
