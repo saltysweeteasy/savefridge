@@ -538,7 +538,7 @@
             }
         }
 
-        // Helper function to call Gemini API (keyless - using firebaseConfig.apiKey)
+        // FIXED: Working API call function (same as your working current version)
         async function callAI(text) {
             try {
                 const res = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash-exp:generateContent?key=${firebaseConfig.apiKey}`, {
@@ -551,8 +551,13 @@
                     })
                 });
                 const data = await res.json();
+                console.log("API Response:", data);
+                
                 if (data.candidates && data.candidates[0] && data.candidates[0].content && data.candidates[0].content.parts) {
                     return data.candidates[0].content.parts[0].text;
+                } else if (data.error) {
+                    console.error("API Error:", data.error);
+                    return "Error: " + data.error.message;
                 }
                 return "Error: Unable to fetch response.";
             } catch (error) {
@@ -561,7 +566,7 @@
             }
         }
 
-        // NEW FUNCTION: Get or generate meal content from cache/database (same as checkpoint version)
+        // NEW FUNCTION: Get or generate meal content from cache/database
         async function getMealContent(mealName, sectionType) {
             if (!currentUser) return null;
             
@@ -603,7 +608,7 @@
             
             const aiResponse = await callAI(aiPrompt);
             
-            // Save to cache
+            // Save to cache if successful
             if (aiResponse && !aiResponse.startsWith("Error")) {
                 await contentRef.set(aiResponse);
                 console.log(`Saved ${sectionType} for ${mealName} to cache`);
@@ -687,7 +692,7 @@
             const descEl = document.getElementById('mealDesc');
             descEl.innerText = "";
             
-            // Get description from cache or generate (same as checkpoint version)
+            // Get description from cache or generate
             const description = await getMealContent(name, 'description');
             if (description && !description.startsWith("Error")) {
                 typeWriter(description, descEl);
@@ -718,7 +723,7 @@
                 content.innerHTML = "<p class='py-4 italic text-gray-400 text-center'>Consulting the chef...</p>";
                 content.classList.add('open'); span.innerText = "-";
                 
-                // Get content from cache or generate (same as checkpoint version)
+                // Get content from cache or generate
                 const aiRes = await getMealContent(currentMealName, type);
                 
                 content.innerHTML = ""; 
@@ -748,10 +753,18 @@
         }
 
         function typeWriter(text, element, speed = 15) {
-            let i = 0; element.classList.add('typing');
+            let i = 0; 
+            element.classList.add('typing');
+            element.innerHTML = "";
             (function type() {
-                if (i < text.length) { element.innerHTML += text.charAt(i); i++; setTimeout(type, speed); }
-                else { element.classList.remove('typing'); }
+                if (i < text.length) { 
+                    element.innerHTML += text.charAt(i); 
+                    i++; 
+                    setTimeout(type, speed); 
+                }
+                else { 
+                    element.classList.remove('typing'); 
+                }
             })();
         }
 
@@ -764,10 +777,17 @@
                     let charIdx = 0;
                     (function typeChar() {
                         if (charIdx < items[itemIdx].length) {
-                            li.innerHTML += items[itemIdx].charAt(charIdx); charIdx++; setTimeout(typeChar, speed);
-                        } else { itemIdx++; nextItem(); }
+                            li.innerHTML += items[itemIdx].charAt(charIdx); 
+                            charIdx++; 
+                            setTimeout(typeChar, speed);
+                        } else { 
+                            itemIdx++; 
+                            nextItem(); 
+                        }
                     })();
-                } else { container.classList.remove('typing'); }
+                } else { 
+                    container.classList.remove('typing'); 
+                }
             })();
         }
 
@@ -804,7 +824,8 @@
             if (ingredients.length === 0) return alert("Add ingredients first!");
             const btn = document.getElementById('cookBtn');
             const mealsContainer = document.getElementById('mealsContainer');
-            btn.innerText = "CHEF IS BRAINSTORMING..."; btn.disabled = true;
+            btn.innerText = "CHEF IS BRAINSTORMING..."; 
+            btn.disabled = true;
             initialVideoContainer.classList.add('hidden');
             loadingScreenDiv.classList.remove('hidden');
             resultsScreenDiv.classList.add('hidden');
@@ -812,6 +833,8 @@
             await loadingVideo.play().catch(e => console.log("Video autoplay prevented:", e));
             try {
                 const res = await callAI(`I have: ${ingredients.join(", ")}. Suggest 3-8 Filipino-style meals. Return ONLY JSON array: [{"name": "Name", "time": "X mins"}]`);
+                console.log("Raw AI Response:", res);
+                
                 // Clean up the response to extract JSON
                 let cleanRes = res.replace(/```json|```/g, "").trim();
                 // Find the JSON array in the response
@@ -829,13 +852,16 @@
                         <div class="text-gray-400 italic text-xs">VIEW DETAILS</div>
                     </div>`).join('');
             } catch (error) { 
-                console.error(error);
+                console.error("Parsing Error:", error);
                 loadingVideo.pause();
                 loadingScreenDiv.classList.add('hidden');
                 resultsScreenDiv.classList.remove('hidden');
                 mealsContainer.innerHTML = '<div class="bg-red-50 border border-red-200 rounded-xl p-8 text-center text-red-700 font-semibold">⚠️ AI service error. Please try again.</div>';
                 alert("AI Error. Try again."); 
-            } finally { btn.innerText = "START COOKING"; btn.disabled = false; }
+            } finally { 
+                btn.innerText = "START COOKING"; 
+                btn.disabled = false; 
+            }
         };
 
         window.onload = () => {
